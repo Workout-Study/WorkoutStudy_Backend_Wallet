@@ -21,6 +21,9 @@ spring:
     show-sql: true
     open-in-view: false
     defer-datasource-initialization: true
+  redis:
+    host: 127.0.0.1
+    port: 6379
 
   sql:
     init:
@@ -79,6 +82,9 @@ spring:
     init:
       platform: mysql
       mode: embedded
+  redis:
+    host: redis-container
+    port: 6379
 
   kafka:
     consumer:

@@ -58,6 +58,8 @@ dependencies {
     runtimeOnly 'com.mysql:mysql-connector-j'
 
     implementation 'com.slack.api:slack-api-client:1.29.2'
+
+    implementation 'org.redisson:redisson-spring-boot-starter:3.17.0'
 }
 
 dependencyManagement {
