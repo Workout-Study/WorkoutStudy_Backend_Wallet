@@ -9,7 +9,7 @@ class WalletLockComponentImpl(
     private val redissonClient: RedissonClient
 ) : WalletLockComponent {
 
-    override fun getWalletLock(userId: Int): RLock {
-        return redissonClient.getLock(userId.toString())
+    override fun getWalletLock(walletId: Int): RLock {
+        return redissonClient.getLock(walletId.toString())
     }
 }

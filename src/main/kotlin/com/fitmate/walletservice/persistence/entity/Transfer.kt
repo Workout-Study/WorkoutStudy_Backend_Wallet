@@ -3,8 +3,8 @@ package com.fitmate.walletservice.persistence.entity
 import jakarta.persistence.*
 import java.time.Instant
 
-@Entity
-class TransferList(
+@Entity(name = "transfer_list")
+class Transfer(
     @Column(nullable = false) val penaltyId: Int,
     @Column(nullable = false) val amount: Int,
     @Column val message: String,

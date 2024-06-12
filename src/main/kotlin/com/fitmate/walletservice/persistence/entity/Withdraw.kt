@@ -3,18 +3,18 @@ package com.fitmate.walletservice.persistence.entity
 import jakarta.persistence.*
 import java.time.Instant
 
-@Entity
-class WithdrawList(
+@Entity(name = "withdraw_list")
+class Withdraw(
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "wallet_id", nullable = false)
     val walletId: Wallet,
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "transfer_id", nullable = true)
-    val transferId: TransferList,
     @Column(nullable = false) val amount: Int,
     @Column val message: String,
     walletState: WalletState,
-    createUser: String
+    createUser: String,
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "transfer_id", nullable = true)
+    val transferId: Transfer? = null
 ) : BaseListEntity(walletState, Instant.now(), createUser) {
 
     @Id

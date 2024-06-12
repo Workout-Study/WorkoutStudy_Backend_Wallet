@@ -8,9 +8,9 @@ import java.time.Instant
 class Wallet(
     val ownerId: Int,
     @Enumerated(EnumType.STRING) val ownerType: WalletOwnerType,
-    balance: Int,
-    state: Boolean = GlobalStatus.PERSISTENCE_NOT_DELETED,
-    createUser: String
+    createUser: String,
+    @Column var balance: Int = 0,
+    state: Boolean = GlobalStatus.PERSISTENCE_NOT_DELETED
 ) : BaseEntity(state, Instant.now(), createUser) {
 
     @Id
