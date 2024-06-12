@@ -6,5 +6,6 @@ class GlobalURI {
         const val ROOT_URI = "/wallet-service"
 
         const val DEPOSIT_URI = "$ROOT_URI/deposit"
+        const val WITHDRAW_URI = "$ROOT_URI/withdraw"
     }
 }
