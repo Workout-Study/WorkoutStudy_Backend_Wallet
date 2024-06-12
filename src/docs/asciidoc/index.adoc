@@ -1,0 +1,33 @@
+= Wallet Service API Document
+:doctype: book
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:seclinks:
+
+ifndef::snippets[]
+:snippets: ./build/generated-snippets
+endif::[]
+
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+[[common]]
+= 개발 환경 정보
+
+|===
+|환경|url
+
+|테스트
+|`http://127.0.0.1`
+
+|운영서버
+|`http://127.0.0.1`
+|===
+
+[[Wallet-Service-API]]
+== 1. Wallet
