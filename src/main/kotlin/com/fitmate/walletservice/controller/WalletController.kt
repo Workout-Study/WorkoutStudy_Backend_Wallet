@@ -1,6 +1,7 @@
 package com.fitmate.walletservice.controller
 
 import com.fitmate.walletservice.common.GlobalURI
+import com.fitmate.walletservice.converter.WalletDtoConverter
 import com.fitmate.walletservice.dto.DepositRequest
 import com.fitmate.walletservice.dto.DepositResponse
 import com.fitmate.walletservice.dto.WithdrawRequest
@@ -20,11 +21,15 @@ class WalletController(
 
     @PostMapping(GlobalURI.DEPOSIT_URI)
     fun deposit(@RequestBody @Valid depositRequest: DepositRequest): ResponseEntity<DepositResponse> {
-        return ResponseEntity.status(HttpStatus.CREATED).body(walletService.deposit(depositRequest))
+        val depositRequestDto = WalletDtoConverter.depositRequestToDto(depositRequest)
+        val deposit = walletService.deposit(depositRequestDto)
+        return ResponseEntity.status(HttpStatus.CREATED).body(WalletDtoConverter.depositToResponse(deposit))
     }
 
     @PostMapping(GlobalURI.WITHDRAW_URI)
     fun withdraw(@RequestBody @Valid withdrawRequest: WithdrawRequest): ResponseEntity<WithdrawResponse> {
-        return ResponseEntity.status(HttpStatus.CREATED).body(walletService.withdraw(withdrawRequest))
+        val withdrawRequestDto = WalletDtoConverter.withdrawRequestToDto(withdrawRequest)
+        val withdraw = walletService.withdraw(withdrawRequestDto)
+        return ResponseEntity.status(HttpStatus.CREATED).body(WalletDtoConverter.withdrawToResponse(withdraw))
     }
 }

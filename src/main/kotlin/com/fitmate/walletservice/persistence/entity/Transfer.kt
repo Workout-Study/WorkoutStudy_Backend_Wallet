@@ -8,9 +8,9 @@ class Transfer(
     @Column(nullable = false) val penaltyId: Int,
     @Column(nullable = false) val amount: Int,
     @Column val message: String,
-    walletState: WalletState,
+    tradeState: TradeState,
     createUser: String
-) : BaseListEntity(walletState, Instant.now(), createUser) {
+) : BaseListEntity(tradeState, Instant.now(), createUser) {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

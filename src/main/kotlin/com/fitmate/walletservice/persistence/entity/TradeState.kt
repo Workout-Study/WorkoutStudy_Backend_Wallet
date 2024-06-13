@@ -1,5 +1,5 @@
 package com.fitmate.walletservice.persistence.entity
 
-enum class WalletState {
+enum class TradeState {
     REQUESTED, COMPLETED, FAILED, CANCELED
 }

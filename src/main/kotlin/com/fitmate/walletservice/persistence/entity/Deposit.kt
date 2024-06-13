@@ -10,12 +10,12 @@ class Deposit(
     val wallet: Wallet,
     @Column(nullable = false) val amount: Int,
     @Column val message: String,
-    walletState: WalletState,
+    tradeState: TradeState,
     createUser: String,
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "transfer_id", nullable = true)
     val transferId: Transfer? = null
-) : BaseListEntity(walletState, Instant.now(), createUser) {
+) : BaseListEntity(tradeState, Instant.now(), createUser) {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

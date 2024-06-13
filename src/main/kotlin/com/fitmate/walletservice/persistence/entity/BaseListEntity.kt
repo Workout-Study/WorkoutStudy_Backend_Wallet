@@ -11,7 +11,7 @@ import java.time.Instant
 @MappedSuperclass
 open class BaseListEntity(
     @Enumerated(EnumType.STRING)
-    var state: WalletState,
+    var state: TradeState,
     @CreatedDate
     @Column(updatable = false)
     @Convert(converter = Jsr310JpaConverters.InstantConverter::class)

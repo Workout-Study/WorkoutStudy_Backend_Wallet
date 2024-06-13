@@ -1,11 +1,14 @@
 package com.fitmate.walletservice.service
 
-import com.fitmate.walletservice.dto.DepositRequest
-import com.fitmate.walletservice.dto.DepositResponse
-import com.fitmate.walletservice.dto.WithdrawRequest
-import com.fitmate.walletservice.dto.WithdrawResponse
+import com.fitmate.walletservice.dto.DepositRequestDto
+import com.fitmate.walletservice.dto.TransferRequest
+import com.fitmate.walletservice.dto.TransferResponse
+import com.fitmate.walletservice.dto.WithdrawRequestDto
+import com.fitmate.walletservice.persistence.entity.Deposit
+import com.fitmate.walletservice.persistence.entity.Withdraw
 
 interface WalletService {
-    fun deposit(depositRequest: DepositRequest): DepositResponse
-    fun withdraw(withdrawRequest: WithdrawRequest): WithdrawResponse
+    fun deposit(depositRequestDto: DepositRequestDto): Deposit
+    fun withdraw(withdrawRequestDto: WithdrawRequestDto): Withdraw
+    fun transfer(transferRequest: TransferRequest): TransferResponse
 }

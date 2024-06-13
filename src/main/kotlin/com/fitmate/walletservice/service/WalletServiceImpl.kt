@@ -2,16 +2,14 @@ package com.fitmate.walletservice.service
 
 import com.fitmate.walletservice.common.GlobalStatus
 import com.fitmate.walletservice.component.WalletLockComponent
-import com.fitmate.walletservice.dto.DepositRequest
-import com.fitmate.walletservice.dto.DepositResponse
-import com.fitmate.walletservice.dto.WithdrawRequest
-import com.fitmate.walletservice.dto.WithdrawResponse
+import com.fitmate.walletservice.dto.DepositRequestDto
+import com.fitmate.walletservice.dto.TransferRequest
+import com.fitmate.walletservice.dto.TransferResponse
+import com.fitmate.walletservice.dto.WithdrawRequestDto
 import com.fitmate.walletservice.exception.NotExpectResultException
 import com.fitmate.walletservice.exception.ResourceNotFoundException
 import com.fitmate.walletservice.persistence.entity.*
-import com.fitmate.walletservice.persistence.repository.DepositRepository
-import com.fitmate.walletservice.persistence.repository.WalletRepository
-import com.fitmate.walletservice.persistence.repository.WithdrawRepository
+import com.fitmate.walletservice.persistence.repository.*
 import org.redisson.api.RLock
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -23,31 +21,31 @@ class WalletServiceImpl(
     private val walletLockComponent: WalletLockComponent,
     private val walletRepository: WalletRepository,
     private val depositRepository: DepositRepository,
-    private val withdrawRepository: WithdrawRepository
+    private val withdrawRepository: WithdrawRepository,
+    private val transferRepository: TransferRepository,
+    private val walletTraceRepository: WalletTraceRepository
 ) : WalletService {
 
     companion object {
         val logger: Logger = LoggerFactory.getLogger(WalletServiceImpl::class.java)
     }
 
-    override fun deposit(depositRequest: DepositRequest): DepositResponse {
-        val wallet = walletRepository.findByOwnerIdAndOwnerTypeAndState(
-            depositRequest.requestUserId,
-            WalletOwnerType.USER,
-            GlobalStatus.PERSISTENCE_NOT_DELETED
-        ).orElseGet {
-            val newWallet =
-                Wallet(
-                    depositRequest.requestUserId,
-                    WalletOwnerType.USER,
-                    depositRequest.requestUserId.toString()
-                )
-
-            walletRepository.save(newWallet)
-        }
+    override fun deposit(depositRequestDto: DepositRequestDto): Deposit {
+        val wallet = getWalletRegisterIfNotExist(
+            depositRequestDto.walletOwnerId,
+            depositRequestDto.walletOwnerType,
+            depositRequestDto.requester
+        )
 
         val deposit =
-            Deposit(wallet, depositRequest.amount, "입금", WalletState.REQUESTED, depositRequest.requestUserId.toString())
+            Deposit(
+                wallet,
+                depositRequestDto.amount,
+                depositRequestDto.message ?: "입금",
+                TradeState.REQUESTED,
+                depositRequestDto.requester,
+                depositRequestDto.transfer
+            )
         val savedDeposit = depositRepository.save(deposit)
 
         val lock: RLock = walletLockComponent.getWalletLock(wallet.id!!)
@@ -58,7 +56,7 @@ class WalletServiceImpl(
             if (!isLocked) {
                 // 락 획득에 실패했으므로 예외 처리
                 logger.error("fail to get wallet Lock deposit : wallet-id = {}", wallet.id)
-                savedDeposit.state = WalletState.FAILED
+                savedDeposit.state = TradeState.FAILED
                 throw NotExpectResultException("fail to get wallet lock.")
             }
 
@@ -68,14 +66,19 @@ class WalletServiceImpl(
             lastWallet.balance += savedDeposit.amount
             walletRepository.save(lastWallet)
 
-            savedDeposit.state = WalletState.COMPLETED
+            savedDeposit.state = TradeState.COMPLETED
 
-            return DepositResponse(true)
+            val walletTrace = WalletTrace(lastWallet, TransferType.DEPOSIT, createUser = depositRequestDto.requester)
+            walletTraceRepository.save(walletTrace)
+
+            return savedDeposit
         } catch (e: Exception) {
             // 쓰레드가 인터럽트 될 경우의 예외 처리
-            savedDeposit.state = WalletState.FAILED
+            savedDeposit.state = TradeState.FAILED
 
-            throw NotExpectResultException(e.message!!)
+            logger.error("fail to withdraw with exception : wallet-id = {}, exception = {}", wallet.id, e.stackTrace)
+
+            return savedDeposit
         } finally {
             if (lock.isLocked && lock.isHeldByCurrentThread) {
                 // 락 해제
@@ -86,29 +89,43 @@ class WalletServiceImpl(
         }
     }
 
-    override fun withdraw(withdrawRequest: WithdrawRequest): WithdrawResponse {
+    private fun getWalletRegisterIfNotExist(
+        walletOwnerId: Int,
+        walletOwnerType: WalletOwnerType,
+        requester: String
+    ): Wallet {
         val wallet = walletRepository.findByOwnerIdAndOwnerTypeAndState(
-            withdrawRequest.requestUserId,
-            WalletOwnerType.USER,
+            walletOwnerId,
+            walletOwnerType,
             GlobalStatus.PERSISTENCE_NOT_DELETED
         ).orElseGet {
             val newWallet =
                 Wallet(
-                    withdrawRequest.requestUserId,
-                    WalletOwnerType.USER,
-                    withdrawRequest.requestUserId.toString()
+                    walletOwnerId,
+                    walletOwnerType,
+                    requester
                 )
 
             walletRepository.save(newWallet)
         }
+        return wallet
+    }
+
+    override fun withdraw(withdrawRequestDto: WithdrawRequestDto): Withdraw {
+        val wallet = getWalletRegisterIfNotExist(
+            withdrawRequestDto.walletOwnerId,
+            withdrawRequestDto.walletOwnerType,
+            withdrawRequestDto.requester
+        )
 
         val withdraw =
             Withdraw(
                 wallet,
-                withdrawRequest.amount,
-                "출금",
-                WalletState.REQUESTED,
-                withdrawRequest.requestUserId.toString()
+                withdrawRequestDto.amount,
+                withdrawRequestDto.message ?: "출금",
+                TradeState.REQUESTED,
+                withdrawRequestDto.requester,
+                withdrawRequestDto.transfer
             )
         val savedWithdraw = withdrawRepository.save(withdraw)
 
@@ -120,7 +137,7 @@ class WalletServiceImpl(
             if (!isLocked) {
                 // 락 획득에 실패했으므로 예외 처리
                 logger.error("fail to get wallet Lock withdraw : wallet-id = {}", wallet.id)
-                savedWithdraw.state = WalletState.FAILED
+                savedWithdraw.state = TradeState.FAILED
                 throw NotExpectResultException("fail to get wallet lock.")
             }
 
@@ -130,14 +147,19 @@ class WalletServiceImpl(
             lastWallet.balance -= savedWithdraw.amount
             walletRepository.save(lastWallet)
 
-            savedWithdraw.state = WalletState.COMPLETED
+            savedWithdraw.state = TradeState.COMPLETED
 
-            return WithdrawResponse(true)
+            val walletTrace = WalletTrace(lastWallet, TransferType.WITHDRAW, createUser = withdrawRequestDto.requester)
+            walletTraceRepository.save(walletTrace)
+
+            return savedWithdraw;
         } catch (e: Exception) {
             // 쓰레드가 인터럽트 될 경우의 예외 처리
-            savedWithdraw.state = WalletState.FAILED
+            savedWithdraw.state = TradeState.FAILED
 
-            throw NotExpectResultException(e.message!!)
+            logger.error("fail to deposit with exception : wallet-id = {}, exception = {}", wallet.id, e.stackTrace)
+
+            return savedWithdraw
         } finally {
             if (lock.isLocked && lock.isHeldByCurrentThread) {
                 // 락 해제
@@ -146,5 +168,58 @@ class WalletServiceImpl(
 
             withdrawRepository.save(savedWithdraw)
         }
+    }
+
+    override fun transfer(transferRequest: TransferRequest): TransferResponse {
+        val transfer = transferRepository.save(
+            Transfer(
+                transferRequest.penaltyId,
+                transferRequest.amount,
+                transferRequest.message ?: "이체",
+                TradeState.REQUESTED,
+                transferRequest.requester
+            )
+        )
+
+        val withdrawRequestDto = WithdrawRequestDto(
+            transferRequest.withdrawWalletOwnerId,
+            transferRequest.withdrawWalletType,
+            transfer.amount,
+            transferRequest.requester,
+            transfer.message,
+            transfer
+        )
+
+        val withdraw = withdraw(withdrawRequestDto)
+
+        if (TradeState.COMPLETED != withdraw.state) {
+            logger.info("transfer request fail because withdraw state is not completed. withdraw id = {}", withdraw.id)
+            transfer.state = TradeState.FAILED
+            transferRepository.save(transfer)
+            return TransferResponse(TradeState.COMPLETED == transfer.state)
+        }
+
+        val depositRequestDto = DepositRequestDto(
+            transferRequest.depositWalletOwnerId,
+            transferRequest.depositWalletType,
+            transfer.amount,
+            transferRequest.requester,
+            transfer.message,
+            transfer
+        )
+
+        val deposit = deposit(depositRequestDto)
+
+        if (TradeState.COMPLETED != withdraw.state) {
+            logger.info("transfer request fail because deposit state is not completed. deposit id = {}", deposit.id)
+            transfer.state = TradeState.FAILED
+            transferRepository.save(transfer)
+            return TransferResponse(TradeState.COMPLETED == transfer.state)
+        }
+
+        transfer.state = TradeState.COMPLETED
+        transferRepository.save(transfer)
+
+        return TransferResponse(TradeState.COMPLETED == transfer.state)
     }
 }
