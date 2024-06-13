@@ -1,5 +1,5 @@
 package com.fitmate.walletservice.persistence.entity
 
-enum class TransferType {
+enum class TradeType {
     DEPOSIT, WITHDRAW
 }

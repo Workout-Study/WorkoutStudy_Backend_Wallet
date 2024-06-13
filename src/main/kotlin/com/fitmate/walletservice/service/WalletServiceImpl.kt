@@ -2,10 +2,7 @@ package com.fitmate.walletservice.service
 
 import com.fitmate.walletservice.common.GlobalStatus
 import com.fitmate.walletservice.component.WalletLockComponent
-import com.fitmate.walletservice.dto.DepositRequestDto
-import com.fitmate.walletservice.dto.TransferRequest
-import com.fitmate.walletservice.dto.TransferResponse
-import com.fitmate.walletservice.dto.WithdrawRequestDto
+import com.fitmate.walletservice.dto.*
 import com.fitmate.walletservice.exception.NotExpectResultException
 import com.fitmate.walletservice.exception.ResourceNotFoundException
 import com.fitmate.walletservice.persistence.entity.*
@@ -68,7 +65,12 @@ class WalletServiceImpl(
 
             savedDeposit.state = TradeState.COMPLETED
 
-            val walletTrace = WalletTrace(lastWallet, TransferType.DEPOSIT, createUser = depositRequestDto.requester)
+            val walletTrace = WalletTrace(
+                lastWallet,
+                TradeType.DEPOSIT,
+                savedDeposit.id!!,
+                createUser = depositRequestDto.requester
+            )
             walletTraceRepository.save(walletTrace)
 
             return savedDeposit
@@ -149,7 +151,12 @@ class WalletServiceImpl(
 
             savedWithdraw.state = TradeState.COMPLETED
 
-            val walletTrace = WalletTrace(lastWallet, TransferType.WITHDRAW, createUser = withdrawRequestDto.requester)
+            val walletTrace = WalletTrace(
+                lastWallet,
+                TradeType.WITHDRAW,
+                savedWithdraw.id!!,
+                createUser = withdrawRequestDto.requester
+            )
             walletTraceRepository.save(walletTrace)
 
             return savedWithdraw;
@@ -221,5 +228,13 @@ class WalletServiceImpl(
         transferRepository.save(transfer)
 
         return TransferResponse(TradeState.COMPLETED == transfer.state)
+    }
+
+    override fun getWalletDetail(walletOwnerId: Int, walletOwnerType: WalletOwnerType): WalletDetailResponse {
+        val wallet = getWalletRegisterIfNotExist(walletOwnerId, walletOwnerType, "getWalletLastAmount")
+
+        val walletDetail = WalletDetailResponse(wallet.id!!, wallet.ownerId, wallet.ownerType, wallet.balance)
+
+        return walletDetail
     }
 }
