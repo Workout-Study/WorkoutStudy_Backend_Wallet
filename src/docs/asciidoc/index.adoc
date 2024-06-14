@@ -30,7 +30,39 @@ endif::[]
 |===
 
 [[Wallet-Service-API]]
-== 1. Wallet-History
+== 1. Wallet
+
+=== Wallet Detail ( 지갑 세부사항 - 현시점 잔액 )
+
+path-parameters
+
+include::{snippets}/get-wallet-detail/path-parameters.adoc[]
+
+http-request
+
+include::{snippets}/get-wallet-detail/http-request.adoc[]
+
+request-body
+
+include::{snippets}/get-wallet-detail/request-body.adoc[]
+
+curl-request
+
+include::{snippets}/get-wallet-detail/curl-request.adoc[]
+
+response-fields
+
+include::{snippets}/get-wallet-detail/response-fields.adoc[]
+
+response-body
+
+include::{snippets}/get-wallet-detail/response-body.adoc[]
+
+http-response
+
+include::{snippets}/get-wallet-detail/http-response.adoc[]
+
+== 2. Wallet-History
 
 === Wallet History ( 지갑 거래 내역 )
 
