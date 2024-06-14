@@ -44,6 +44,7 @@ dependencies {
     runtimeOnly 'com.h2database:h2'
     testImplementation 'io.rest-assured:rest-assured'
     implementation 'org.projectlombok:lombok'
+    testImplementation "org.mockito.kotlin:mockito-kotlin:5.2.1"
 
     implementation "com.querydsl:querydsl-jpa:${queryDslVersion}:jakarta"
     kapt "com.querydsl:querydsl-apt:${queryDslVersion}:jakarta"
@@ -58,6 +59,8 @@ dependencies {
     runtimeOnly 'com.mysql:mysql-connector-j'
 
     implementation 'com.slack.api:slack-api-client:1.29.2'
+
+    implementation 'org.redisson:redisson-spring-boot-starter:3.17.0'
 }
 
 dependencyManagement {
