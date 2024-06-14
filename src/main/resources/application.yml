@@ -54,6 +54,11 @@ eureka:
     service-url:
       defaultZone: http://127.0.0.1:8761/eureka
 
+user:
+  create:
+    point: 100000
+    message: "회원가입 포인트"
+
 ---
 spring:
   config:

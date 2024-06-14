@@ -3,10 +3,10 @@ package com.fitmate.walletservice.controller
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fitmate.walletservice.common.GlobalURI
 import com.fitmate.walletservice.dto.TransferRequest
+import com.fitmate.walletservice.module.WalletModuleService
 import com.fitmate.walletservice.persistence.entity.UserForRead
 import com.fitmate.walletservice.persistence.entity.WalletOwnerType
 import com.fitmate.walletservice.persistence.repository.UserForReadRepository
-import com.fitmate.walletservice.service.WalletService
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
@@ -40,7 +40,7 @@ class WalletHistoryControllerBootTest {
     private lateinit var objectMapper: ObjectMapper
 
     @Autowired
-    private lateinit var walletService: WalletService
+    private lateinit var walletModuleService: WalletModuleService
 
     @Autowired
     private lateinit var userForReadRepository: UserForReadRepository
@@ -72,12 +72,12 @@ class WalletHistoryControllerBootTest {
                 "test"
             )
 
-            walletService.transfer(transferRequest)
+            walletModuleService.transfer(transferRequest)
         }
     }
 
     @Test
-    @DisplayName("[단위][Controller] Get Wallet History - 성공 테스트")
+    @DisplayName("[통합][Controller] Get Wallet History - 성공 테스트")
     @Throws(Exception::class)
     fun `get wallet history`() {
         //given

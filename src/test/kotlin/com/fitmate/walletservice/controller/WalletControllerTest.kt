@@ -3,8 +3,8 @@ package com.fitmate.walletservice.controller
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fitmate.walletservice.common.GlobalURI
 import com.fitmate.walletservice.dto.WalletDetailResponse
+import com.fitmate.walletservice.module.WalletModuleService
 import com.fitmate.walletservice.persistence.entity.WalletOwnerType
-import com.fitmate.walletservice.service.WalletService
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
@@ -34,7 +34,7 @@ class WalletControllerTest {
     private lateinit var objectMapper: ObjectMapper
 
     @MockBean
-    private lateinit var walletService: WalletService
+    private lateinit var walletModuleService: WalletModuleService
 
     private val walletId = 341L
     private val walletOwnerId = 63
@@ -48,7 +48,7 @@ class WalletControllerTest {
         //given
         val walletDetailResponse = WalletDetailResponse(walletId, walletOwnerId, walletOwnerType, balance)
 
-        whenever(walletService.getWalletDetail(any<Int>(), any<WalletOwnerType>()))
+        whenever(walletModuleService.getWalletDetail(any<Int>(), any<WalletOwnerType>()))
             .thenReturn(walletDetailResponse)
 
         //when

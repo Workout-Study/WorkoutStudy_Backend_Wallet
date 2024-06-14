@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonMappingException
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fitmate.walletservice.common.GlobalStatus
 import com.fitmate.walletservice.dto.UserCreateMessageDto
+import com.fitmate.walletservice.service.UserService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.kafka.annotation.KafkaListener
@@ -12,7 +13,8 @@ import org.springframework.stereotype.Component
 
 @Component
 class UserEventConsumer(
-    private val objectMapper: ObjectMapper
+    private val objectMapper: ObjectMapper,
+    private val userService: UserService
 ) {
 
     companion object {
@@ -45,7 +47,6 @@ class UserEventConsumer(
 
             throw e
         }
-
-        //TODO user 생성시 생성 포인트 입금 필요
+        userService.createUser(userCreateMessageDto, "kafka")
     }
 }

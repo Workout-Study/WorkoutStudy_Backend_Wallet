@@ -1,28 +1,28 @@
-package com.fitmate.walletservice.config;
+package com.fitmate.walletservice.config
 
-import org.redisson.Redisson;
-import org.redisson.api.RedissonClient;
-import org.redisson.config.Config;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.redisson.Redisson
+import org.redisson.api.RedissonClient
+import org.redisson.config.Config
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
 
 @Configuration
-public class RedissonConfiguration {
+class RedissonConfiguration {
 
-    @Value("${spring.redis.port}")
-    private int port;
+    @Value("\${spring.redis.port}")
+    private val port = 0
 
-    @Value("${spring.redis.host}")
-    private String host;
+    @Value("\${spring.redis.host}")
+    private val host: String? = null
 
-    private static final String REDISSON_HOST_PREFIX = "redis://";
+    private val REDISSON_HOST_PREFIX = "redis://"
 
     @Bean
-    public RedissonClient redissonClient() {
-        Config config = new Config();
-        config.useSingleServer().setAddress(REDISSON_HOST_PREFIX + host + ":" + port);
+    fun redissonClient(): RedissonClient {
+        val config = Config()
+        config.useSingleServer().setAddress("$REDISSON_HOST_PREFIX$host:$port")
 
-        return Redisson.create(config);
+        return Redisson.create(config)
     }
 }

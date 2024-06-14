@@ -1,4 +1,4 @@
-package com.fitmate.walletservice.service
+package com.fitmate.walletservice.module
 
 import com.fitmate.walletservice.common.GlobalStatus
 import com.fitmate.walletservice.component.WalletLockComponent
@@ -14,17 +14,17 @@ import org.springframework.stereotype.Service
 import java.util.concurrent.TimeUnit
 
 @Service
-class WalletServiceImpl(
+class WalletModuleServiceImpl(
     private val walletLockComponent: WalletLockComponent,
     private val walletRepository: WalletRepository,
     private val depositRepository: DepositRepository,
     private val withdrawRepository: WithdrawRepository,
     private val transferRepository: TransferRepository,
     private val walletTraceRepository: WalletTraceRepository
-) : WalletService {
+) : WalletModuleService {
 
     companion object {
-        val logger: Logger = LoggerFactory.getLogger(WalletServiceImpl::class.java)
+        val logger: Logger = LoggerFactory.getLogger(WalletModuleServiceImpl::class.java)
     }
 
     override fun deposit(depositRequestDto: DepositRequestDto): Deposit {
@@ -91,7 +91,7 @@ class WalletServiceImpl(
         }
     }
 
-    private fun getWalletRegisterIfNotExist(
+    override fun getWalletRegisterIfNotExist(
         walletOwnerId: Int,
         walletOwnerType: WalletOwnerType,
         requester: String
