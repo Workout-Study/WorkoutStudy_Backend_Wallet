@@ -68,7 +68,7 @@ class WalletHistoryControllerBootTest {
                 walletOwnerType,
                 i * 1000,
                 "test" + i,
-                i,
+                i.toLong(),
                 "test"
             )
 
