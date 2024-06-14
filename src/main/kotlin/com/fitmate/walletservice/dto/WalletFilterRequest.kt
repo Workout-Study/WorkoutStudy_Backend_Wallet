@@ -15,7 +15,7 @@ data class WalletFilterRequest(
     val historyEndDate: Instant =
         LocalDate.now().withDayOfMonth(LocalDate.now().lengthOfMonth())
             .atStartOfDay().plusHours(23).plusMinutes(59).plusSeconds(59).toInstant(ZoneOffset.UTC),
-    val tradeType: TradeType?,
+    val tradeType: TradeType? = null,
     val pageNumber: Int = 0,
     val pageSize: Int = 5
 )

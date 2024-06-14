@@ -7,7 +7,7 @@ data class WalletTradeHistoryResponseDto(
     val tradeType: TradeType,
     val amount: Int,
     val message: String,
-    val userId: Int?,
-    val userNickname: String?,
+    val depositUserId: Int?,
+    val depositUserNickname: String?,
     val createdAt: Instant
 )

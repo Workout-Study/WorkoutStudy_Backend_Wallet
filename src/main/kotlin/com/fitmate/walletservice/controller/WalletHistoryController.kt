@@ -14,7 +14,7 @@ class WalletHistoryController(
     private val walletHistoryService: WalletHistoryService
 ) {
 
-    @GetMapping(GlobalURI.WALLET_FILTER)
+    @GetMapping(GlobalURI.WALLET_HISTORY)
     fun getWalletHistory(@ModelAttribute walletFilterRequest: WalletFilterRequest): ResponseEntity<WalletTradeHistoryResponse> {
         return ResponseEntity.ok().body(walletHistoryService.getWalletHistory(walletFilterRequest))
     }

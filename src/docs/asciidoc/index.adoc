@@ -30,4 +30,26 @@ endif::[]
 |===
 
 [[Wallet-Service-API]]
-== 1. Wallet
+== 1. Wallet-History
+
+=== Wallet History ( 지갑 거래 내역 )
+
+http-request
+
+include::{snippets}/get-wallet-history/http-request.adoc[]
+
+curl-request
+
+include::{snippets}/get-wallet-history/curl-request.adoc[]
+
+response-fields
+
+include::{snippets}/get-wallet-history/response-fields.adoc[]
+
+response-body
+
+include::{snippets}/get-wallet-history/response-body.adoc[]
+
+http-response
+
+include::{snippets}/get-wallet-history/http-response.adoc[]
