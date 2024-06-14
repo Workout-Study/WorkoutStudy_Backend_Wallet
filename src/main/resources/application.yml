@@ -21,6 +21,9 @@ spring:
     show-sql: true
     open-in-view: false
     defer-datasource-initialization: true
+  redis:
+    host: 127.0.0.1
+    port: 6379
 
   sql:
     init:
@@ -51,6 +54,13 @@ eureka:
     service-url:
       defaultZone: http://127.0.0.1:8761/eureka
 
+user:
+  create:
+    point: 100000
+    message: "회원가입 포인트"
+  penalty:
+    message: "벌금"
+
 ---
 spring:
   config:
@@ -79,6 +89,9 @@ spring:
     init:
       platform: mysql
       mode: embedded
+  redis:
+    host: redis-container
+    port: 6379
 
   kafka:
     consumer:
