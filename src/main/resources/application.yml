@@ -58,6 +58,8 @@ user:
   create:
     point: 100000
     message: "회원가입 포인트"
+  penalty:
+    message: "벌금"
 
 ---
 spring:

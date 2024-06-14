@@ -9,6 +9,6 @@ data class TransferRequest(
     val depositWalletType: WalletOwnerType,
     val amount: Int,
     val message: String? = null,
-    val penaltyId: Int,
+    val penaltyId: Long,
     val requester: String
 )

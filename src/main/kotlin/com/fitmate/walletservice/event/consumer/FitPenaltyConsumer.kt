@@ -1,6 +1,8 @@
 package com.fitmate.walletservice.event.consumer
 
 import com.fitmate.walletservice.common.GlobalStatus
+import com.fitmate.walletservice.service.FitPenaltyService
+import org.apache.coyote.BadRequestException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.kafka.annotation.KafkaListener
@@ -8,6 +10,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class FitPenaltyConsumer(
+    private val fitPenaltyService: FitPenaltyService
 ) {
 
     companion object {
@@ -26,6 +29,14 @@ class FitPenaltyConsumer(
             fitPenaltyId
         )
 
-        //TODO 패널티 생성시 포인트 입출금 로직 필요
+        val fitPenaltyIdLong: Long
+
+        try {
+            fitPenaltyIdLong = fitPenaltyId.toLong()
+        } catch (exception: Exception) {
+            throw BadRequestException("fit penalty id must be long")
+        }
+
+        fitPenaltyService.transferPenalty(fitPenaltyIdLong)
     }
 }

@@ -5,7 +5,7 @@ import java.time.Instant
 
 @Entity(name = "transfer_list")
 class Transfer(
-    @Column(nullable = false) val penaltyId: Int,
+    @Column(nullable = false) val penaltyId: Long,
     @Column(nullable = false) val amount: Int,
     @Column val message: String,
     tradeState: TradeState,
