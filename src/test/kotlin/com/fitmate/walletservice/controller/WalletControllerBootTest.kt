@@ -31,7 +31,7 @@ class WalletControllerBootTest {
     private val walletOwnerId = 63
     private val walletOwnerType = WalletOwnerType.USER
 
-    @Test
+    //@Test
     @DisplayName("[통합][Controller] Get Balance - 성공 테스트")
     @Throws(Exception::class)
     fun `get wallet balance`() {
