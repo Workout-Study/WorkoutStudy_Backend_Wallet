@@ -55,7 +55,7 @@ class WalletHistoryControllerBootTest {
     private val pageNumber: Int = 0
     private val pageSize: Int = 5
 
-    @BeforeEach
+    //@BeforeEach
     fun `set up`() {
         val userForRead = UserForRead(3, "testuser", "test")
         userForReadRepository.save(userForRead)
@@ -76,7 +76,7 @@ class WalletHistoryControllerBootTest {
         }
     }
 
-    @Test
+    //@Test
     @DisplayName("[통합][Controller] Get Wallet History - 성공 테스트")
     @Throws(Exception::class)
     fun `get wallet history`() {

@@ -203,7 +203,7 @@ class WalletModuleServiceImpl(
             logger.info("transfer request fail because withdraw state is not completed. withdraw id = {}", withdraw.id)
             transfer.state = TradeState.FAILED
             transferRepository.save(transfer)
-            return TransferResponse(TradeState.COMPLETED == transfer.state)
+            return TransferResponse(TradeState.COMPLETED == transfer.state, transfer.id)
         }
 
         val depositRequestDto = DepositRequestDto(
@@ -221,13 +221,13 @@ class WalletModuleServiceImpl(
             logger.info("transfer request fail because deposit state is not completed. deposit id = {}", deposit.id)
             transfer.state = TradeState.FAILED
             transferRepository.save(transfer)
-            return TransferResponse(TradeState.COMPLETED == transfer.state)
+            return TransferResponse(TradeState.COMPLETED == transfer.state, transfer.id)
         }
 
         transfer.state = TradeState.COMPLETED
         transferRepository.save(transfer)
 
-        return TransferResponse(TradeState.COMPLETED == transfer.state)
+        return TransferResponse(TradeState.COMPLETED == transfer.state, transfer.id)
     }
 
     override fun getWalletDetail(walletOwnerId: Int, walletOwnerType: WalletOwnerType): WalletDetailResponse {
