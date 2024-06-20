@@ -3,6 +3,7 @@ package com.fitmate.walletservice.service
 import com.fitmate.walletservice.common.BatchServiceURI
 import com.fitmate.walletservice.dto.FitPenaltyDetailResponseDto
 import com.fitmate.walletservice.dto.TransferRequest
+import com.fitmate.walletservice.event.event.TransferSuccessEvent
 import com.fitmate.walletservice.exception.NotExpectResultException
 import com.fitmate.walletservice.module.WalletModuleServiceImpl
 import com.fitmate.walletservice.persistence.entity.TradeState
@@ -10,6 +11,7 @@ import com.fitmate.walletservice.persistence.entity.WalletOwnerType
 import com.fitmate.walletservice.persistence.repository.TransferRepository
 import com.fitmate.walletservice.utils.SenderUtils
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpMethod
 import org.springframework.http.ResponseEntity
@@ -20,7 +22,8 @@ import org.springframework.transaction.annotation.Transactional
 class FitPenaltyServiceImpl(
     private val transferRepository: TransferRepository,
     private val senderUtils: SenderUtils,
-    private val walletModuleServiceImpl: WalletModuleServiceImpl
+    private val walletModuleServiceImpl: WalletModuleServiceImpl,
+    private val applicationEventPublisher: ApplicationEventPublisher
 ) : FitPenaltyService {
 
     @Value("\${user.penalty.message}")
@@ -56,6 +59,9 @@ class FitPenaltyServiceImpl(
             "penalty event"
         )
 
-        walletModuleServiceImpl.transfer(transferRequest)
+        val transferResponse = walletModuleServiceImpl.transfer(transferRequest)
+
+        if (transferResponse.isTransferSuccess)
+            applicationEventPublisher.publishEvent(TransferSuccessEvent(transferResponse.transferId!!))
     }
 }
