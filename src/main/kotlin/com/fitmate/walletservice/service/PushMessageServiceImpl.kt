@@ -40,7 +40,7 @@ class PushMessageServiceImpl(
         val uriEndPoint = AlarmServiceURI.ALARM_PENALTY
 
         senderUtils.sendWithoutResponse(
-            HttpMethod.GET,
+            HttpMethod.POST,
             uriEndPoint,
             null,
             pushMessageDto)
@@ -60,7 +60,7 @@ class PushMessageServiceImpl(
         val uriEndPoint = AlarmServiceURI.ALARM_PENALTY
 
         senderUtils.sendWithoutResponse(
-            HttpMethod.GET,
+            HttpMethod.POST,
             uriEndPoint,
             null,
             pushMessageDto)
