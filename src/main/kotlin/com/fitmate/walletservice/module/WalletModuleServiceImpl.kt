@@ -113,7 +113,7 @@ class WalletModuleServiceImpl(
                     requester
                 )
 
-            walletRepository.save(newWallet)
+            walletRepository.saveAndFlush(newWallet)
         }
         return wallet
     }
