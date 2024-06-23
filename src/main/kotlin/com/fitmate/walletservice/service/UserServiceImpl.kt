@@ -64,8 +64,8 @@ class UserServiceImpl(
     @Transactional
     override fun createUser(userCreateMessageDto: UserCreateMessageDto, eventPublisher: String) {
         val userForRead =
-            userForReadRepository.findByUserId(userCreateMessageDto.id)
-                .orElse(UserForRead(userCreateMessageDto.id, userCreateMessageDto.nickname, eventPublisher))
+            userForReadRepository.findByUserId(userCreateMessageDto.userId)
+                .orElse(UserForRead(userCreateMessageDto.userId, userCreateMessageDto.nickname, eventPublisher))
 
         userForRead.updateByUserMessageDto(userCreateMessageDto, eventPublisher)
 
