@@ -47,6 +47,14 @@ class SenderUtils(
         return retrieve(method, uri, jsonData, makeHeader(header), responseClass)
     }
 
+    fun sendWithoutResponse(
+        method: HttpMethod,
+        uri: String,
+        header: Map<String, String>?,
+        jsonData: Any?
+    ) {
+        return retrieveWithoutResponse(method, uri, jsonData, makeHeader(header))
+    }
 
     private fun makeHeader(headerMap: Map<String, String>?): Consumer<HttpHeaders> {
         return Consumer<HttpHeaders> { headers: HttpHeaders ->
@@ -115,6 +123,56 @@ class SenderUtils(
             }
 
             return responseEntity
+        } catch (wre: WebClientResponseException) {
+            logger?.warn("WebClientResponseException", wre)
+
+            afterTime = System.currentTimeMillis()
+            theSec = (afterTime - beforeTime) / 1000
+
+            logger?.info("WebClient Exception Response [ Processing time : $theSec End Time : $afterTime ]")
+
+            throw wre
+        } catch (e: Exception) {
+            logger?.error("<ALARM_ERROR>WebClient Exception - [ Request time : $beforeTime ]$e")
+
+            throw NotExpectResultException("WebClientRequest Exception$e")
+        }
+    }
+
+    private fun retrieveWithoutResponse(
+        method: HttpMethod, uri: String, jsonData: Any?, headers: Consumer<HttpHeaders>?
+    ) {
+        val beforeTime = System.currentTimeMillis()
+        var afterTime: Long
+        var theSec: Long
+
+        try {
+            val webClient: WebClient = getWebClient()
+
+            val request: WebClient.RequestHeadersSpec<*> = webClient
+                .method(method)
+                .uri(uri)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .bodyValue(jsonData ?: "")
+
+            if (headers != null) {
+                request.headers(headers)
+            }
+
+            logger?.info(
+                "WebClient Request Start - Request Time : {}, Request Uri = {}, Request Data [{}]",
+                beforeTime,
+                uri,
+                objectMapper.writeValueAsString(jsonData)
+            )
+
+           request
+                .retrieve().toBodilessEntity().subscribe()
+
+            afterTime = System.currentTimeMillis()
+            theSec = (afterTime - beforeTime) / 1000
+
         } catch (wre: WebClientResponseException) {
             logger?.warn("WebClientResponseException", wre)
 
