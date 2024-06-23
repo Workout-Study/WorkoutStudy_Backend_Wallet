@@ -1,7 +1,7 @@
 package com.fitmate.walletservice.dto
 
 data class UserCreateMessageDto(
-    val id: Int,
+    val userId: Int,
     val nickname: String,
     val state: Boolean,
     val createdAt: String,
