@@ -4,6 +4,8 @@ import com.fitmate.walletservice.common.AlarmServiceURI
 import com.fitmate.walletservice.dto.PushMessageDto
 import com.fitmate.walletservice.dto.PushMessageResponseDto
 import com.fitmate.walletservice.exception.ResourceNotFoundException
+import com.fitmate.walletservice.persistence.entity.WalletOwnerType
+import com.fitmate.walletservice.persistence.repository.DepositRepository
 import com.fitmate.walletservice.persistence.repository.TransferRepository
 import com.fitmate.walletservice.persistence.repository.WithdrawRepository
 import com.fitmate.walletservice.utils.SenderUtils
@@ -16,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional
 class PushMessageServiceImpl(
     private val withdrawRepository: WithdrawRepository,
     private val transferRepository: TransferRepository,
+    private val depositRepository: DepositRepository,
     private val senderUtils: SenderUtils
 ) : PushMessageService {
 
@@ -36,12 +39,30 @@ class PushMessageServiceImpl(
 
         val uriEndPoint = AlarmServiceURI.ALARM_PENALTY
 
-        senderUtils.send(
+        senderUtils.sendWithoutResponse(
             HttpMethod.GET,
             uriEndPoint,
             null,
-            pushMessageDto,
-            object : ParameterizedTypeReference<PushMessageResponseDto>() {
-            })
+            pushMessageDto)
+    }
+
+    @Transactional(readOnly = true)
+    override fun pushDepositSuccessMessage(depositId: Long) {
+        val deposit = depositRepository.findById(depositId)
+            .orElseThrow { ResourceNotFoundException("pushTransferSuccessMessage Deposit does not exist") }
+
+        if(deposit.wallet.ownerType == WalletOwnerType.GROUP) return
+
+        val message = "${deposit.amount} 입금됐습니다."
+
+        val pushMessageDto = PushMessageDto(deposit.wallet.ownerId, message)
+
+        val uriEndPoint = AlarmServiceURI.ALARM_PENALTY
+
+        senderUtils.sendWithoutResponse(
+            HttpMethod.GET,
+            uriEndPoint,
+            null,
+            pushMessageDto)
     }
 }
