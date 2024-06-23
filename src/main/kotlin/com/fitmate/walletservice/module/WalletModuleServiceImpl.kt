@@ -3,6 +3,7 @@ package com.fitmate.walletservice.module
 import com.fitmate.walletservice.common.GlobalStatus
 import com.fitmate.walletservice.component.WalletLockComponent
 import com.fitmate.walletservice.dto.*
+import com.fitmate.walletservice.event.event.DepositSuccessEvent
 import com.fitmate.walletservice.exception.NotExpectResultException
 import com.fitmate.walletservice.exception.ResourceNotFoundException
 import com.fitmate.walletservice.persistence.entity.*
@@ -10,6 +11,7 @@ import com.fitmate.walletservice.persistence.repository.*
 import org.redisson.api.RLock
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import java.util.concurrent.TimeUnit
 
@@ -20,7 +22,8 @@ class WalletModuleServiceImpl(
     private val depositRepository: DepositRepository,
     private val withdrawRepository: WithdrawRepository,
     private val transferRepository: TransferRepository,
-    private val walletTraceRepository: WalletTraceRepository
+    private val walletTraceRepository: WalletTraceRepository,
+    private val applicationEventPublisher: ApplicationEventPublisher
 ) : WalletModuleService {
 
     companion object {
@@ -72,6 +75,8 @@ class WalletModuleServiceImpl(
                 createUser = depositRequestDto.requester
             )
             walletTraceRepository.save(walletTrace)
+
+            if (savedDeposit.state == TradeState.COMPLETED) applicationEventPublisher.publishEvent(DepositSuccessEvent(savedDeposit.id!!))
 
             return savedDeposit
         } catch (e: Exception) {
