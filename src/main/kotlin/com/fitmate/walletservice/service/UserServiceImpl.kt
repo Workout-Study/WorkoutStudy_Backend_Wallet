@@ -4,7 +4,6 @@ import com.fitmate.walletservice.common.UserServiceURI
 import com.fitmate.walletservice.dto.DepositRequestDto
 import com.fitmate.walletservice.dto.UserCreateMessageDto
 import com.fitmate.walletservice.dto.UserInfoResponse
-import com.fitmate.walletservice.event.event.UserCreateEvent
 import com.fitmate.walletservice.exception.NotExpectResultException
 import com.fitmate.walletservice.module.WalletModuleService
 import com.fitmate.walletservice.persistence.entity.Deposit
@@ -70,7 +69,7 @@ class UserServiceImpl(
         userForRead.updateByUserMessageDto(userCreateMessageDto, eventPublisher)
 
         userForReadRepository.save(userForRead)
-        applicationEventPublisher.publishEvent(UserCreateEvent(userForRead.userId))
+        createUserDefaultPoint(userForRead.userId)
     }
 
     @Transactional
@@ -87,7 +86,7 @@ class UserServiceImpl(
             "User Create Event",
             createMessage
         )
-        
+
         walletModuleService.deposit(depositRequestDto)
     }
 }
