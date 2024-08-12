@@ -8,6 +8,7 @@ import com.fitmate.walletservice.dto.WalletTradeHistoryResponseDto
 import com.fitmate.walletservice.persistence.entity.TradeType
 import com.fitmate.walletservice.persistence.entity.WalletOwnerType
 import com.fitmate.walletservice.service.WalletHistoryService
+import com.fitmate.walletservice.utils.DateParseUtils
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -29,7 +30,9 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import org.springframework.web.util.UriComponentsBuilder
 import java.time.Instant
 import java.time.LocalDate
+import java.time.ZoneId
 import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
 
 @WebMvcTest(WalletHistoryController::class)
 @AutoConfigureRestDocs
@@ -46,11 +49,13 @@ class WalletHistoryControllerTest {
 
     private val walletOwnerId = 723
     private val walletOwnerType = WalletOwnerType.GROUP
+    private val formatter = DateTimeFormatter.ofPattern(DateParseUtils.DEFAULT_FORMAT)
     private val historyStartDate = LocalDate.now().withDayOfMonth(1)
-        .atStartOfDay().toInstant(ZoneOffset.UTC)
-    private val historyEndDate: Instant =
+        .atStartOfDay().toInstant(ZoneOffset.UTC).atZone(ZoneId.systemDefault()).format(formatter)
+    private val historyEndDate =
         LocalDate.now().withDayOfMonth(LocalDate.now().lengthOfMonth())
             .atStartOfDay().plusHours(23).plusMinutes(59).plusSeconds(59).toInstant(ZoneOffset.UTC)
+            .atZone(ZoneId.systemDefault()).format(formatter)
     private val pageNumber: Int = 0
     private val pageSize: Int = 5
     private val hasNext = true
@@ -86,7 +91,6 @@ class WalletHistoryControllerTest {
             .queryParam("pageSize", pageSize)
             .queryParam("tradeType", TradeType.DEPOSIT)
             .build()
-            .encode()
             .toUriString()
 
         //when
