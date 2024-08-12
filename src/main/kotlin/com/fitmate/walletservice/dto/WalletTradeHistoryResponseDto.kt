@@ -1,6 +1,7 @@
 package com.fitmate.walletservice.dto
 
 import com.fitmate.walletservice.persistence.entity.TradeType
+import com.fitmate.walletservice.utils.DateParseUtils
 import java.time.Instant
 
 data class WalletTradeHistoryResponseDto(
@@ -9,5 +10,7 @@ data class WalletTradeHistoryResponseDto(
     val message: String,
     val depositUserId: Int?,
     val depositUserNickname: String?,
-    val createdAt: Instant
-)
+    private val createdAtInstant: Instant
+) {
+    val createdAt = DateParseUtils.instantToString(createdAtInstant)
+}

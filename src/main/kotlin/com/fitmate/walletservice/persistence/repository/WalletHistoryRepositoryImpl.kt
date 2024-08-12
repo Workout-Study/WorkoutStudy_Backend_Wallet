@@ -62,7 +62,7 @@ class WalletHistoryRepositoryImpl(jpaQueryFactory: JPAQueryFactory) :
             .where(
                 wallet.ownerId.eq(walletFilterRequest.walletOwnerId),
                 wallet.ownerType.eq(walletFilterRequest.walletOwnerType),
-                dateCondition(walletFilterRequest.historyStartDate, walletFilterRequest.historyEndDate),
+                dateCondition(walletFilterRequest.historyStartDateInstant, walletFilterRequest.historyEndDateInstant),
                 tradeTypeCondition(walletFilterRequest.tradeType)
             )
             .offset(pageable.offset)
