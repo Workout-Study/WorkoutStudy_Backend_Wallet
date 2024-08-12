@@ -1,5 +1,6 @@
 package com.fitmate.walletservice.dto
 
+import com.fitmate.walletservice.utils.DateParseUtils
 import java.time.Instant
 
 data class FitPenaltyDetailResponseDto(
@@ -7,5 +8,7 @@ data class FitPenaltyDetailResponseDto(
     val fitGroupId: Long,
     val userId: Int,
     val amount: Int,
-    val createdAt: Instant
-)
+    private val createdAtInstant: Instant
+) {
+    val createdAt = DateParseUtils.instantToString(createdAtInstant)
+}
