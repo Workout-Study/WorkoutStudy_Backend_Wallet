@@ -8,8 +8,8 @@ data class UserInfoResponse(
     val userId: Int,
     val nickname: String,
     val state: Boolean,
-    private val createdAt: String,
-    private val updatedAt: String?
+    val createdAt: String,
+    val updatedAt: String?
 ) {
     val createdAtInstant = DateParseUtils.stringToInstant(createdAt)
     val updatedAtInstant: Instant? =
